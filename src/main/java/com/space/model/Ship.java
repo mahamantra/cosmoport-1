@@ -1,6 +1,8 @@
 package com.space.model;
 
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -26,7 +28,7 @@ public class Ship {
     @Column(name = "prodDate")
     private Date prodDate;
 
-    @Column(name = "isUsed")
+    @Column(name = "isUsed", nullable = false)
     private Boolean isUsed;
 
     @Column(name = "speed")

@@ -1,16 +1,29 @@
 package com.space.service;
 
 import com.space.model.Ship;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface ShipService {
     
     
-    ResponseEntity deleteById(Long id);
+    Page<Ship> gelAllShips(Pageable sortedByName);
 
-    ResponseEntity getShip(Long id);
+    List<Ship> gelAllShips();
 
-    List<Ship> findAll();
+    Ship createShip(Ship requestShip);
+
+    Ship getShip(Long id);
+
+    Ship editShip(Long id, Ship ship);
+
+    void deleteById(Long id);
+
+    boolean isValidForAdd(Ship ship);
+
+    boolean isValidForEdit(Ship ship);
+
+    boolean isShipExist(Long id);
 }
