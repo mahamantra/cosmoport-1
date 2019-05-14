@@ -1,13 +1,14 @@
 package com.space.service;
 
-import com.space.controller.ShipRestController;
 import com.space.model.Ship;
+import com.space.model.ShipType;
 import com.space.repository.ShipRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,13 +27,13 @@ public class ShipServiceImpl implements ShipService {
     private ShipRepository shipRepository;
 
     @Override
-    public Page<Ship> gelAllShips(Pageable sortedByName) {
-        return shipRepository.findAll(sortedByName);
+    public Page<Ship> gelAllShips(Specification<Ship> specification, Pageable sortedByName) {
+        return shipRepository.findAll(specification, sortedByName);
     }
 
     @Override
-    public List<Ship> gelAllShips() {
-        return shipRepository.findAll();
+    public List<Ship> gelAllShips(Specification<Ship> specification) {
+        return shipRepository.findAll(specification);
     }
 
     @Override
@@ -186,6 +187,92 @@ public class ShipServiceImpl implements ShipService {
     public void deleteById(Long id) {
 
         shipRepository.deleteById(id);
+    }
 
+    @Override
+    public Specification<Ship> filterByName(String name) {
+        return (root, query, cb) -> name == null ? null : cb.like(root.get("name"), "%" + name + "%");
+    }
+
+    @Override
+    public Specification<Ship> filterByPlanet(String planet) {
+        return (root, query, cb) -> planet == null ? null : cb.like(root.get("planet"), "%" + planet + "%");
+    }
+
+    @Override
+    public Specification<Ship> filterByShipType(ShipType shipType) {
+        return (root, query, cb) -> shipType == null ? null : cb.equal(root.get("shipType"), shipType);
+    }
+
+    @Override
+    public Specification<Ship> filterByDate(Long after, Long before) {
+        return (root, query, cb) -> {
+            if (after == null && before == null)
+                return null;
+            if (after == null) {
+                Date before1 = new Date(before);
+                return cb.lessThanOrEqualTo(root.get("prodDate"), before1);
+            }
+            if (before == null) {
+                Date after1 = new Date(after);
+                return cb.greaterThanOrEqualTo(root.get("prodDate"), after1);
+            }
+            Date before1 = new Date(before);
+            Date after1 = new Date(after);
+            return cb.between(root.get("prodDate"), after1, before1);
+        };
+    }
+
+    @Override
+    public Specification<Ship> filterByUsage(Boolean isUsed) {
+        return (root, query, cb) -> {
+            if (isUsed == null)
+                return null;
+            if (isUsed)
+                return cb.isTrue(root.get("isUsed"));
+            else return cb.isFalse(root.get("isUsed"));
+        };
+    }
+
+    @Override
+    public Specification<Ship> filterBySpeed(Double min, Double max) {
+        return (root, query, cb) -> {
+            if (min == null && max == null)
+                return null;
+            if (min == null)
+                return cb.lessThanOrEqualTo(root.get("speed"), max);
+            if (max == null)
+                return cb.greaterThanOrEqualTo(root.get("speed"), min);
+
+            return cb.between(root.get("speed"), min, max);
+        };
+    }
+
+    @Override
+    public Specification<Ship> filterByCrewSize(Integer min, Integer max) {
+        return (root, query, cb) -> {
+            if (min == null && max == null)
+                return null;
+            if (min == null)
+                return cb.lessThanOrEqualTo(root.get("crewSize"), max);
+            if (max == null)
+                return cb.greaterThanOrEqualTo(root.get("crewSize"), min);
+
+            return cb.between(root.get("crewSize"), min, max);
+        };
+    }
+
+    @Override
+    public Specification<Ship> filterByRating(Double min, Double max) {
+        return (root, query, cb) -> {
+            if (min == null && max == null)
+                return null;
+            if (min == null)
+                return cb.lessThanOrEqualTo(root.get("rating"), max);
+            if (max == null)
+                return cb.greaterThanOrEqualTo(root.get("rating"), min);
+
+            return cb.between(root.get("rating"), min, max);
+        };
     }
 }
