@@ -28,7 +28,7 @@ public class Ship {
     @Column(name = "prodDate")
     private Date prodDate;
 
-    @Column(name = "isUsed", nullable = false)
+    @Column(name = "isUsed")
     private Boolean isUsed;
 
     @Column(name = "speed")
