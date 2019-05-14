@@ -2,6 +2,8 @@ package com.space.controller;
 
 import com.space.model.Ship;
 import com.space.service.ShipService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +17,7 @@ import java.util.List;
 @RequestMapping(value = "/rest")
 public class ShipRestController {
 
-    int page;
+    public static final Logger logger = LoggerFactory.getLogger(ShipRestController.class);
 
     @Autowired
     private ShipService shipService;
@@ -25,7 +27,7 @@ public class ShipRestController {
                                   @RequestParam(value = "pageNumber", required = false,defaultValue = "0") Integer pageNumber,
                                   @RequestParam(value = "pageSize", required = false, defaultValue = "3") Integer pageSize) {
 
-            Pageable sortedByName = order == ShipOrder.ID ? PageRequest.of(pageNumber, pageSize, Sort.by(order.getFieldName())) : PageRequest.of(pageNumber, pageSize, Sort.by(order.getFieldName()).descending());
+            Pageable sortedByName = (order == ShipOrder.ID) ? PageRequest.of(pageNumber, pageSize, Sort.by(order.getFieldName())) : PageRequest.of(pageNumber, pageSize, Sort.by(order.getFieldName()).descending());
         return shipService.gelAllShips(sortedByName).getContent();
     }
 
@@ -69,7 +71,6 @@ public class ShipRestController {
             return ResponseEntity.ok(shipService.editShip(id, ship));
 
         else return ResponseEntity.badRequest().build();
-
     }
 
     @DeleteMapping(value = "/ships/{id}")
