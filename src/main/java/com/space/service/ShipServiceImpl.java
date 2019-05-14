@@ -1,7 +1,10 @@
 package com.space.service;
 
+import com.space.controller.ShipRestController;
 import com.space.model.Ship;
 import com.space.repository.ShipRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +19,8 @@ import java.util.Objects;
 
 @Service
 public class ShipServiceImpl implements ShipService {
+
+    public static final Logger logger = LoggerFactory.getLogger(ShipServiceImpl.class);
 
     @Autowired
     private ShipRepository shipRepository;
