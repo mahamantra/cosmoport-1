@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface ShipService {
 
-
     Page<Ship> gelAllShips(Specification<Ship> specification, Pageable sortedByName);
 
     List<Ship> gelAllShips(Specification<Ship> specification);

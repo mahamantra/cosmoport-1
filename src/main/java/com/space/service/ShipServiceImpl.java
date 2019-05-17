@@ -22,10 +22,12 @@ import java.util.List;
 @Service
 public class ShipServiceImpl implements ShipService {
 
-    public static final Logger logger = LoggerFactory.getLogger(ShipServiceImpl.class);
+    private ShipRepository shipRepository;
 
     @Autowired
-    private ShipRepository shipRepository;
+    public void setShipRepository(ShipRepository shipRepository) {
+        this.shipRepository = shipRepository;
+    }
 
     @Override
     public Page<Ship> gelAllShips(Specification<Ship> specification, Pageable sortedByName) {
