@@ -23,11 +23,7 @@ public interface ShipService {
 
     void deleteById(Long id);
 
-    boolean isValidForAdd(Ship ship);
-
-    boolean isValidForEdit(Ship ship);
-
-    boolean isShipExist(Long id);
+    Long checkAndParseId(String id);
 
     Specification<Ship> filterByPlanet(String planet);
 

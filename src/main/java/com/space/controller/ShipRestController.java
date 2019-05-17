@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class ShipRestController {
     }
 
     @GetMapping(value = "/ships")
+    @ResponseStatus(HttpStatus.OK)
     public List<Ship> getAllShips(@RequestParam(value = "name", required = false) String name,
                                   @RequestParam(value = "planet", required = false) String planet,
                                   @RequestParam(value = "shipType", required = false) ShipType shipType,
@@ -49,7 +51,8 @@ public class ShipRestController {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.getFieldName()));
 
-        return service.gelAllShips(Specification.where(service.filterByName(name)
+        return service.gelAllShips(
+                Specification.where(service.filterByName(name)
                         .and(service.filterByPlanet(planet)))
                         .and(service.filterByShipType(shipType))
                         .and(service.filterByDate(after, before))
@@ -57,10 +60,12 @@ public class ShipRestController {
                         .and(service.filterBySpeed(minSpeed, maxSpeed))
                         .and(service.filterByCrewSize(minCrewSize, maxCrewSize))
                         .and(service.filterByRating(minRating, maxRating))
-                , pageable).getContent();
+                , pageable
+        ).getContent();
     }
 
     @RequestMapping(value = "/ships/count", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
     public Integer getCount(@RequestParam(value = "name", required = false) String name,
                             @RequestParam(value = "planet", required = false) String planet,
                             @RequestParam(value = "shipType", required = false) ShipType shipType,
@@ -74,59 +79,55 @@ public class ShipRestController {
                             @RequestParam(value = "minRating", required = false) Double minRating,
                             @RequestParam(value = "maxRating", required = false) Double maxRating) {
 
-        return service.gelAllShips(Specification.where(service.filterByName(name)
-                .and(service.filterByPlanet(planet)))
-                .and(service.filterByShipType(shipType))
-                .and(service.filterByDate(after, before))
-                .and(service.filterByUsage(isUsed))
-                .and(service.filterBySpeed(minSpeed, maxSpeed))
-                .and(service.filterByCrewSize(minCrewSize, maxCrewSize))
-                .and(service.filterByRating(minRating, maxRating))).size();
+        return service.gelAllShips(
+                Specification.where(service.filterByName(name)
+                        .and(service.filterByPlanet(planet)))
+                        .and(service.filterByShipType(shipType))
+                        .and(service.filterByDate(after, before))
+                        .and(service.filterByUsage(isUsed))
+                        .and(service.filterBySpeed(minSpeed, maxSpeed))
+                        .and(service.filterByCrewSize(minCrewSize, maxCrewSize))
+                        .and(service.filterByRating(minRating, maxRating))
+        ).size();
     }
 
     @PostMapping(value = "/ships")
-    public ResponseEntity addShip(@RequestBody Ship requestShip) {
-        if (service.isValidForAdd(requestShip)) {
-            Ship newShip = service.createShip(requestShip);
-            return ResponseEntity.ok(newShip);
-        }
-        return ResponseEntity.badRequest().build();
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Ship addShip(@RequestBody Ship ship) {
+
+        return service.createShip(ship);
+
     }
 
     @GetMapping(value = "/ships/{id}")
-    public ResponseEntity getShip(@PathVariable(value = "id") Long id) {
-        if (id == null || id <= 0 || !(id instanceof Long))
-            return ResponseEntity.badRequest().build();
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Ship getShip(@PathVariable(value = "id") String id) {
 
-        if (service.isShipExist(id))
-            return ResponseEntity.ok(service.getShip(id));
+        Long longId = service.checkAndParseId(id);
 
-        else return ResponseEntity.notFound().build();
+        return service.getShip(longId);
     }
 
     @PostMapping(value = "/ships/{id}")
-    public ResponseEntity editShip(@PathVariable(value = "id") Long id, @RequestBody Ship ship) {
-        if (id == null || id <= 0 || !(id instanceof Long))
-            return ResponseEntity.badRequest().build();
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Ship editShip(@PathVariable(value = "id") String id, @RequestBody Ship ship) {
 
-        if (!service.isShipExist(id))
-            return ResponseEntity.notFound().build();
+        Long longId = service.checkAndParseId(id);
 
-        if (service.isValidForEdit(ship))
-            return ResponseEntity.ok(service.editShip(id, ship));
-
-        else return ResponseEntity.badRequest().build();
+        return service.editShip(longId, ship);
     }
 
     @DeleteMapping(value = "/ships/{id}")
-    public ResponseEntity deleteShip(@PathVariable(value = "id") Long id) {
-        if (id == null || id <= 0 || !(id instanceof Long))
-            return ResponseEntity.badRequest().build();
+    @ResponseStatus(HttpStatus.OK)
 
-        if (service.isShipExist(id)) {
-            service.deleteById(id);
-            return ResponseEntity.ok().build();
+    public void deleteShip(@PathVariable(value = "id") String id) {
 
-        } else return ResponseEntity.notFound().build();
+        Long longId = service.checkAndParseId(id);
+
+        service.deleteById(longId);
+
     }
 }
