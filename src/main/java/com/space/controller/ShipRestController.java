@@ -21,8 +21,13 @@ public class ShipRestController {
 
     public static final Logger logger = LoggerFactory.getLogger(ShipRestController.class);
 
-    @Autowired
+
     private ShipService service;
+
+    @Autowired
+    public void setService(ShipService service) {
+        this.service = service;
+    }
 
     @GetMapping(value = "/ships")
     public List<Ship> getAllShips(@RequestParam(value = "name", required = false) String name,
@@ -45,13 +50,13 @@ public class ShipRestController {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(order.getFieldName()));
 
         return service.gelAllShips(Specification.where(service.filterByName(name)
-                .and(service.filterByPlanet(planet)))
-                .and(service.filterByShipType(shipType))
-                .and(service.filterByDate(after, before))
-                .and(service.filterByUsage(isUsed))
-                .and(service.filterBySpeed(minSpeed, maxSpeed))
-                .and(service.filterByCrewSize(minCrewSize, maxCrewSize))
-                .and(service.filterByRating(minRating, maxRating))
+                        .and(service.filterByPlanet(planet)))
+                        .and(service.filterByShipType(shipType))
+                        .and(service.filterByDate(after, before))
+                        .and(service.filterByUsage(isUsed))
+                        .and(service.filterBySpeed(minSpeed, maxSpeed))
+                        .and(service.filterByCrewSize(minCrewSize, maxCrewSize))
+                        .and(service.filterByRating(minRating, maxRating))
                 , pageable).getContent();
     }
 
@@ -70,13 +75,13 @@ public class ShipRestController {
                             @RequestParam(value = "maxRating", required = false) Double maxRating) {
 
         return service.gelAllShips(Specification.where(service.filterByName(name)
-                        .and(service.filterByPlanet(planet)))
-                        .and(service.filterByShipType(shipType))
-//                .and(service.filterByDate(after, before))
-                        .and(service.filterByUsage(isUsed))
-                        .and(service.filterBySpeed(minSpeed, maxSpeed))
-                        .and(service.filterByCrewSize(minCrewSize, maxCrewSize))
-                        .and(service.filterByRating(minRating, maxRating))).size();
+                .and(service.filterByPlanet(planet)))
+                .and(service.filterByShipType(shipType))
+                .and(service.filterByDate(after, before))
+                .and(service.filterByUsage(isUsed))
+                .and(service.filterBySpeed(minSpeed, maxSpeed))
+                .and(service.filterByCrewSize(minCrewSize, maxCrewSize))
+                .and(service.filterByRating(minRating, maxRating))).size();
     }
 
     @PostMapping(value = "/ships")
